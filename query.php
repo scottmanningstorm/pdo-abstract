@@ -33,11 +33,10 @@ class Query
 	{		
 		if ($query === "") {
 			throw new Exception("Error - No query passed in!");
-			 
 		}
 
 		$statment = $this->process($query, $binds);
-		 
+		
 		return $statment->fetchAll(); 
 	}	
 
@@ -52,7 +51,7 @@ class Query
 	public function getObj($query, $binds = array())  
 	{		
 		if ($query === "") {
-			throw new Exception("Error - No query passed in!");
+			throw new Exception("Error - No query passed into GetObj Method - Query.php!");
 			 
 		}
 
@@ -68,15 +67,23 @@ class Query
 	  * @param array $bind
 	  * @return String $lastInsertId  
 	  */
-	public function insert($binds=array())
+	public function insert($query, $binds=array())
 	{
-		$output = $this->process($binds);
+		
+		
+		if($query === "") {
+			throw new Exception("No query passed into INSERT method - Query.php"); 
+		}
+		
+		$output = $this->process($query, $binds);
 
 		if ($output) {
 			return $this->db->lastInsertId();
 		} else {
 			return false;
 		}
+
+
 	} 
 
 	 /**
@@ -92,7 +99,7 @@ class Query
 		try { 
 
 			$statment = $this->db->prepare($query); 
-
+			
 			$statment = $this->bind($binds, $statment);
 
 			$statment->execute(); 
@@ -102,28 +109,58 @@ class Query
 		} catch (PDOException $e) { 
 			die($e->getMesssage()); 
 		}
-	}	
+	}
 
-	 /**
-	  * Method binds any params to this object's query and returns the query as string.  	  
-	  *
-	  * @access public
-	  * @param string $statment
-	  * @param array $binds
-	  * @return bool $statment  
-	  */ 
+	/**
+	 * Method binds any params to this object's query and returns the query as string.  	  
+	 *
+	 * @access public
+	 * @param string $statment
+	 * @param array $binds
+	 * @return bool $statment  
+	 */ 
 	public function bind($binds, $statment)
 	{
-		foreach($binds as $bind => $value) {
-			$statment->bindParam(":$bind", $value, PDO::PARAM_STR); 
-		}
 
+		foreach($binds as $bind => $value) {
+ 	 				 
+			$statment->bindValue(':'.$bind, $value, $this->getDataType($bind) );  
+
+		}
+ 	
 		return $statment;
 	}
 
+	protected function getDataType($data) 
+	{
+		$return_type;  
+
+	 	switch($data)
+	 	{
+	 		default: 
+	 		{
+	 			return PDO::PARAM_STR; 
+	 		}
+
+	 		case 'Boolean' : 
+	 		{
+	 			return PDO::PARAM_BOOL;  
+	 		}
+
+	 		case 'string' :
+	 		{
+	 			return PDO::PARAM_STR;  
+	 		}
+
+	 		case 'double' :
+	 		{
+	 			return PDO::PARAM_STR;  
+		 	}
 
 
-	
+	 	} 
+		 
+	}
 
 }
 

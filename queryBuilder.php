@@ -3,7 +3,31 @@
 class QueryBuilder 
 {
 	
+	protected $select_components = array('select',
+										  'from',
+										  'columns',
+										  'where',
+										  'orderBy',
+										  'groupBy',
+										  'limit', 
+										  'table' 
 
+									);
+
+	protected $insert_components = array('insert',
+										  'columns',
+										  'values'
+									);
+
+	protected $update_components = array('update',
+										  'set',	//SQL SET statment
+										  'where',
+										  'orderBy',
+										  'limit'
+									);
+
+	// UPDATE table SET column = value WHERE cond = conv ORDER BY col LIMIT 1, 4
+	protected $query_type; 
 
 	 /**
 	  * Deletes a given record from our databse. 
@@ -14,20 +38,18 @@ class QueryBuilder
 	public function deleteFromDatabase($id) 
 	{
 		$statment = "DELETE FROM " .$this->table.' '.$this->getWhere();
+
 		return $statment; 
 	}		
 	 
-	 /**
-	  * Method will update a record. 
-	  * @access public
-	  * @param int $id
-	  * @return String $statment  
-	  */ 
-	public function updateDatabase($id, $values)
+
+
+	public function compileUpdate(Grammer $grammer) 
 	{
-		$statment = "UPDATE " .$this->table. " SET Values (".$this->binds($vales).") WHERE id = ".$id." "; 
-		return $statment; 
-	} 
+		$statment = $this->callMethod($grammer, $this->update_components); 
+		 
+		return $statment;
+	}
 
 	 /**
 	  * Method will compile a sql statment based on properties set in this object. 
@@ -35,48 +57,40 @@ class QueryBuilder
 	  * @access public
 	  * @return string $statment  
 	  */ 
-	public function compileSelect(Selectgrammer $grammer)
+	public function compileSelect(Grammer $grammer)
 	{
-		$statment[] = 'SELECT';
 
-		$statment[] = $this->callMethod($grammer); 
 
+		$statment = $this->callMethod($grammer, $this->select_components); 
+	
+		return $statment;
 	}
+
 	 /**
 	  * Takes any vars to INSERT to our databse. 
 	  * @access public
 	  * @param array $values
 	  * @return String $statment  
 	  */
-	public function compileInsert(InsertGrammer $grammer)  
+
+	public function compileInsert(Grammer $grammer)  
 	{
-		/*
-		$statment = "INSERT INTO " .$this->table. " Values (".$this->binds($vales).")"; 
-		return $statment; 
-		*/ 
-		$statment[] = "INSERT INTO ";
 
-		$statment[] = $this->callMethod($grammer); 
-
-		die(var_dump($statment)); 
-		
-		return $statment; 
+		$statment = $this->callMethod($grammer, $this->insert_components); 
+	
+		return $statment;
 
 	}
 
-
-	public function callMethod($grammer) 
+	public function callMethod($grammer, $select_components) 
 	{
+		foreach ($select_components as $value) {
 
-		foreach ($grammer as $key => $value) {
-
-			$property = $this->renderProperty($key);
-
-			$method = 'build'.$property;
-
+			$method = 'build'.ucfirst($value);
+		
 			if (method_exists($this, $method)) {
-
-				$statment[] = $this->{$method}($value);
+				
+				$statment[] = $this->{$method}($grammer);
 
 			}
 
@@ -86,28 +100,32 @@ class QueryBuilder
 
 	}
 
-	public function renderProperty($key)
+	
+	public function buildUpdate(Grammer $grammer) 
 	{
-		$prop = explode('_', $key);
-		$new_value = array();
+		return 'UPDATE ' . $grammer->table;
+	} 
 
-		if (count($prop) > 0) {
+	public function buildInsert(Grammer $grammer) 
+	{
+		return 'INSERT INTO ' . $grammer->table;
+	} 
 
-			for ($i=0; $i<=count($prop)-1; $i++) {
-				$new_value[] = ucfirst($prop[$i]);
-			}
-
-			$new_value = implode('', $new_value);
+	public function buildColumns(Grammer $grammer)
+	{	
+ 		if ($grammer->column > 0) { 
+			return '(' .implode(', ', $grammer->column ). ' )';  
 		}
-
-		return $new_value;
-
 	}
 
-	public function buildBinds($binds)
+	public function buildValues(Grammer $grammer)
 	{
-		return 'VALUES ('.implode(', ', $binds).')';
+		return 'VALUES (' .implode(', ', $grammer->bindvalues ). ' )';
 	}
+	//buildSet
+
+
+
 
 	 /**
 	  * Returns part of our query string for GROUPBY. 
@@ -115,12 +133,12 @@ class QueryBuilder
 	  * @access public
 	  * @return string $return  
 	  */ 
-	public function buildGroupBy($group) 
+	public function buildGroup(Grammer $grammer) 
 	{
 		$return = '';
 
 		if(!!$group) {
-			$return = 'GROUP BY ' . $group; 
+			$return = 'GROUP BY ' . $grammer->group_by; 
 		} 
 
 		return $return; 
@@ -130,12 +148,12 @@ class QueryBuilder
      * Gets part of our query stament for any ORDERBY statments. 
      * @return string $return
      */
-	public function buildOrderBy($order)
+	public function buildOrder(Grammer $grammer)
 	{
 		$return = ''; 
 
-		if ($order) {
-			$return = ' ORDER BY '. $order;
+		if ($grammer->order_by) {
+			$return = ' ORDER BY '. $grammer->order_by;
 		}
 
 		return $return; 
@@ -147,9 +165,14 @@ class QueryBuilder
      * Gets part of our query string for any tables. 
      * @return string 
      */
-	public function buildTable($table) 
+	public function buildFrom(Grammer $grammer) 
 	{	
-		return ' FROM ' . $table; 
+		return "FROM " . $grammer->table;
+	}
+
+	public function buildTable(Grammer $grammer)
+	{
+		return $grammer->table; 
 	}
 
 
@@ -157,11 +180,11 @@ class QueryBuilder
      * Builds up our WHERE statments for our query. 
      * @return string $return
      */
-	public function buildWhere($where)
+	public function buildWhere(Grammer $grammer)
 	{
-		if (count($where) > 0) {
+		if (count($grammer->wheres) > 0) {
 
-				$return = 'WHERE '. implode(' AND ', $where);
+			$return = 'WHERE '. implode(' AND ', $grammer->wheres);
 
 			return $return; 
 		}
@@ -172,12 +195,13 @@ class QueryBuilder
      * Gets any LIMIT statments to use in our query. 
      * @return string $return 
      */
-	public function buildLimitBy($limit) 
+	public function buildLimit(Grammer $grammer) 
 	{
+
 		$return = '';
 
-		if (!!$limit) { 
-			$return = ' LIMIT ' . $limit; 
+		if (!!$grammer->limit_by) { 
+			$return = ' LIMIT ' . $grammer->limit_by; 
 		}
 
 		return $return; 
@@ -189,7 +213,8 @@ class QueryBuilder
      * @return string $return 
      */
 	public function buildColumn($columns) 
-	{
+	{	
+
 		if (!!$columns) {	
 			$return = $columns; 
 		} else {
@@ -198,6 +223,9 @@ class QueryBuilder
 
 		return $return; 
 	}
+
+
+
 
 
 

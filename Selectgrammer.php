@@ -1,43 +1,13 @@
 <?php 
+require_once("grammer.php"); 
 
-class SelectGrammer extends grammer { 
-
-	 /**
-     * Holds ref to our column
-     * @var string
-     */
-	public $column; 
-
-	/**
-     * Holds ref to our table
-     * @var string
-     */
-	public $table; 
+class SelectGrammer extends Grammer { 
 	
-	/**
-     * Holds ref to our where statment.
-     * @var string
-     */
-	public $where; 
-	
-	/**
-     * Holds ref to our Order bys
-     * @var string
-     */
-	public $order_by; 
-	
-	/**
+		/**
      * Holds ref to our group bys
      * @var string
      */
 	public $group_by;
-	
-	/**
-     * Holds ref to our limits
-     * @var string
-     */
-	public $limit_by; 
-
 
 	public function setGroupBy($group)
 	{
@@ -59,16 +29,24 @@ class SelectGrammer extends grammer {
 		$this->table = $table; 
 	}
 
-	public function setColumn($column)
+	public function setColumns($column)
 	{
 		$this->column = $column; 
 	}
 
-	public function setWhere($where) 
+	public function setSelectProperties(Active $active)								
 	{
-		$this->where = $where;
+		
+		$this->Where($this->wheres);
+		$this->setOrderby($this->order_by);
+		$this->setLimitBy($this->limit_by); 
+		$this->setGroupBy($this->group_by); 
+		$this->setTable($this->table);
+
+		return $this;
 	}
 
+	
 }
 
 ?> 

@@ -3,16 +3,32 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require('active.php'); 
+require('GrammerMapper.php'); 
 
 
-$test = new Active('test');
+$test = new Active('user');
+
+//$grammer = new Grammer($test); 
+
+
+
+$test->where("id", '>', 20)->get(); 
 
 //$data = $test->where('ID', '>', 1)->limit(1)->insert();
-$data = $test->selectTable('test')->insert(); 
+//$array = array("username" => "my username ", "password" => "pMy assword");
 
-var_dump($data);
-//$data = $test->whereTitleAndId(array('title', 'id'));
+//$data = $test->setWhere('id', '>', 1)->Limit(3)->get(); 
+ 
+
+
+//$mapper->Where("id", "=", 1)->limit(10).get();
+//$mapper->get();  
+
+
+echo "<br /> <br />"; 
+ 
+ 
+	
 
 
 

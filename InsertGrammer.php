@@ -1,21 +1,11 @@
 <?php 
 
-class InsertGrammer extends Grammer { 
+ 
+class InsertGrammer extends Grammer  
+{ 
 	
-
-
-
-	/**
-     * Holds ref to our table
-     * @var string
-     */
-	public $table;
-
-	/**
-     * Holds ref to our limits
-     * @var string
-     */
-	public $limit_by; 
+	public $insert; 
+	public $into; 
 
 	public $binds = array();
 
@@ -24,14 +14,49 @@ class InsertGrammer extends Grammer {
 		$binds = array();
 
 		foreach ($data as $key => $value) {
-			$binds[':$key'] = $value;
+		 
+			$binds[] = ':'.$key;
+
+			$this->column[] = $key;
 		}
 
 		$this->binds = $binds;
+		
+	  
+	}
+
+	 
+
+	public function setTable($table)
+	{
+		$this->table = $table; 
+	}
+	
+	public function setColumn($column)
+	{
+		$this->column = $column; 
+
+		return $this;
 	}
 
 
-
+	 /**
+	  * Method will compile our INSERT querys. 
+	  *
+	  * @access public
+	  * @param optinal $query
+	  * @param string $bind
+	  * @return associativeArray. 
+	  */
+	public function setInsertProperties($values)
+	{
+	
+		$grammer->setTable($this->table);
+		$grammer->setBinds($values); 
+ 		
+		return $grammer; 
+	}
+	
 }
 
 ?> 
