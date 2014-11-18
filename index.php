@@ -1,42 +1,29 @@
 <?php
+////////////////////////////////
+//   DEBUG - Error Reporting. //
+error_reporting(E_ALL);   	  //
+ini_set('display_errors', 1); //
+////////////////////////////////
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once('loader/autoLoader.php'); 
 
-require('GrammerMapper.php'); 
-
-
+AutoLoader::findClass(); 
+ 
 $test = new Active('user');
 
-//$grammer = new Grammer($test); 
+/////////////////
+///TEST INDEX//// 
+/////////////////
 
 
+$array = array("username" => "New Username ", "password" => "New Password");
+$a = array('userNAMEM', 'Password si '); 
 
-$test->where("id", '>', 20)->get(); 
-
-//$data = $test->where('ID', '>', 1)->limit(1)->insert();
-//$array = array("username" => "my username ", "password" => "pMy assword");
-
-//$data = $test->setWhere('id', '>', 1)->Limit(3)->get(); 
- 
+var_dump( $test->where('id', '=', 173)->get() );
 
 
-//$mapper->Where("id", "=", 1)->limit(10).get();
-//$mapper->get();  
-
-
-echo "<br /> <br />"; 
- 
- 
-	
-
-
-
-echo '<br>';
-echo '<br>';
-echo '<br>';
-//var_dump($dataset);
-
-
+/////////////////
+///TEST INDEX//// 
+/////////////////
 
 ?> 

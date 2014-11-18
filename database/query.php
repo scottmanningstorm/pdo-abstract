@@ -1,32 +1,30 @@
 <?php 
 
-require_once('connect.php'); 
-
 class Query
 {
 	/**
      * Holds our database object. 
-     * @var string
+     * @var Object
      */
 	private $db;  
 
 	/**
-     * Constructor, creates or gets our singleton database obj.  
+     * Constructor, creates or gets our singleton database obj and sets it to $this->db.  
      * @access public 
      * 
      */
 	public function __construct() 
 	{
-		$this->db = Connnect::getInstance("localhost", "pdo", "root", "root"); 
+		$this->db = Connect::getInstance("localhost", "pdo", "root", "root"); 
 	}
 
 
 	 /**
-	  * Method takes query, to query our database with and returns an assoc array. 
+	  * Method takes a query string and queries our database. Returns an assoc array of the results. 
 	  *
 	  * @access public
-	  * @param optinal $query
-	  * @param string $bind
+	  * @param string $query
+	  * @param optinal $bind
 	  * @return associativeArray. 
 	  */
 	public function getAssoc($query, $binds = array())  
@@ -41,11 +39,11 @@ class Query
 	}	
 
 	 /**
-	  * Method takes query, to query our database with and returns an Object. 
+	  * Method takes a query string and queries our database. Returns an assoc array of the results. 
 	  *
 	  * @access public
-	  * @param optinal $query
-	  * @param string $bind
+	  * @param string $query
+	  * @param optinal $bind
 	  * @return Object. 
 	  */
 	public function getObj($query, $binds = array())  
@@ -61,28 +59,56 @@ class Query
 	}	
 
 	 /**
-	  * Method takes an array of parameters and creates a query string to execute. 
+	  * Method takes a query string and inserts any passed in values to our database. 
 	  *
 	  * @access public
-	  * @param array $bind
-	  * @return String $lastInsertId  
+	  * @param string $query
+	  * @param optinal $binds  
+	  * @return int 
 	  */
 	public function insert($query, $binds=array())
 	{
 		
-		
-		if($query === "") {
+		if ($query === "") {
+			
 			throw new Exception("No query passed into INSERT method - Query.php"); 
+	
 		}
 		
-		$output = $this->process($query, $binds);
+		$output = $this->process($query, $binds); 
 
 		if ($output) {
+			
 			return $this->db->lastInsertId();
+		} else {
+			
+			return false;
+		
+		}
+
+	} 
+
+	 /**
+	  * Method takes a query string and any values to insert into our database. 
+	  *
+	  * @access public
+	  * @param string $query
+	  * @param optinal $binds  
+	  * @return bool 
+	  */
+	public function update($query, $binds=array())
+	{
+		if ($query === "") {
+			throw new Exception("No query passed into UPDATE method - Query.php"); 
+		}
+		
+		$output = $this->process($query, $binds); 
+		
+		if ($output) {
+			return true;
 		} else {
 			return false;
 		}
-
 
 	} 
 
@@ -99,11 +125,11 @@ class Query
 		try { 
 
 			$statment = $this->db->prepare($query); 
-			
+
 			$statment = $this->bind($binds, $statment);
-
+			 
 			$statment->execute(); 
-
+				 
 			return $statment;
 
 		} catch (PDOException $e) { 
@@ -117,20 +143,30 @@ class Query
 	 * @access public
 	 * @param string $statment
 	 * @param array $binds
-	 * @return bool $statment  
+	 * @return string $statment  
 	 */ 
 	public function bind($binds, $statment)
-	{
+	{	
+		if ( count($binds) > 0) {
+			
+			foreach($binds as $bind => $value) {
+	 	 	  
+	 	 		$statment->bindValue(':'.$bind, $value, $this->getDataType($bind));  
 
-		foreach($binds as $bind => $value) {
- 	 				 
-			$statment->bindValue(':'.$bind, $value, $this->getDataType($bind) );  
+	 		}	
 
-		}
- 	
+		}		
+ 	 	
 		return $statment;
 	}
 
+	/**
+	 * Method will return a PDO data type coresponding to the data type of a passed in parameter.  	  
+	 *
+	 * @access protected
+	 * @param string $data
+	 * @return DataType  
+	 */ 
 	protected function getDataType($data) 
 	{
 		$return_type;  

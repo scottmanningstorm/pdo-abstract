@@ -1,7 +1,7 @@
 <?php   
 
 	
-class Connnect 
+class Connect 
  {
     /**
      * Holds name of database. 
@@ -10,19 +10,19 @@ class Connnect
 	private $database; 
 
 	/**
-     * Holds username for database
+     * Holds username for database.
      * @var string
      */
 	private $username; 
 
 	/**
-     * Holds password to log into database
+     * Holds password to log into database.
      * @var string
      */
 	private $password; 
 
 	/**
-     * Holds host name and database name . 
+     * Holds host name and database name. 
      * @var string
      */
 	private $dsn; 
@@ -34,14 +34,14 @@ class Connnect
 	protected static $instance = NULL;
 
 	/**
-	 *  Method returns singleton instance of PDO object
+	 *  Method returns a singleton instance of PDO object if it allready exists. If it does not exist we create an instance. 
 	 *
 	 *  @access public
 	 *  @param string $hostname
 	 *  @param string $database
 	 *  @param string $username
 	 *  @param string $password
-	 * 	@return object
+	 * 	@return Object
 	 */
 	public static function getInstance($hostname, $database, $username, $password) 
 	{
