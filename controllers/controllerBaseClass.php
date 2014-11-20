@@ -6,21 +6,28 @@ Abstract class ControllerBaseClass
 	
 	protected $params = array(); 
 
+
 	public function __construct() 
 	{
-		echo 'base class constructor'; 
+		
 	}
 
-	public function callView($a = 'param1')
-	{
+	public function callView()
+	{	
+		extract($this->params, EXTR_PREFIX_SAME, "wddx");
 
-		include('views/view.php'); 
+		include('views/view.php'); 	
 	}
 
-	public function addParam($param)
+	public function addParam($key, $paramValue)
 	{
-		$this->params[] = $param; 
+		$this->params[$key] = $paramValue; 
 	} 
+
+	public function getParams($key)
+	{
+		return $this->params[$key]; 
+	}
 
 }
 

@@ -3,7 +3,7 @@
 
 class Blog 
 {
-
+	
 	public function index() 
 	{
 		echo 'index method inside Blog class'; 

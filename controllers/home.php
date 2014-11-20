@@ -4,23 +4,23 @@
 class Home extends ControllerBaseClass
 {
 
-
 	public function __construct()
-	{
-		 
-		 parent::__construct(); 
-
+	{	 
+		 parent::__construct();
 	}
 
 
-	public function index() 
+	public function index($title = '', $username= '') 	
 	{
-		echo '<br /> <br /> ** HOME - Index function asfsdfsdfpsd fsdf, sdf kdflsdfds ** <br /> <br />'; 
+		$this->addParam('title' , $title); 
+		$this->addParam('username', $username); 
+		
+		$this->callView();  
 	}
 
 	public function view() 
 	{
-		echo ' <br /> <br /> ** HOME INDEX - View function  asfsdfsdfpsd fsdf, sdf kdflsdfds ** <br /> <br />'; 
+		echo 'ohome view';
 	}
 
 }

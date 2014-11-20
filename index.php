@@ -26,9 +26,9 @@ var_dump( $test->where('id', '=', 173)->get() );
 */
 
 
-$route = new Router(); 
+$route = new Route(); 
 
-$model = new Home(); 
+$route->callController(); 
 //$route->dumpURI(); 
 	 
  

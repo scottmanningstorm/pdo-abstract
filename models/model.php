@@ -4,16 +4,10 @@
 class Model extends Active
 {
 
-	public function __construct($table = '') 
+	public function __construct() 
 	{
-	
-		parent::__construct();
-
-		$this->grammer->table = $table;  
-
-	}
-
-	
+		parent::__construct('user'); 
+	} 
 	
 }
 
