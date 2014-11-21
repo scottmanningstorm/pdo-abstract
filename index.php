@@ -1,15 +1,12 @@
 <?php
-////////////////////////////////
-//   DEBUG - Error Reporting. //
-error_reporting(E_ALL);   	  //
-ini_set('display_errors', 1); //
-ini_set('allow_url_include', 1); 						  //
-////////////////////////////////
+ob_start();
 
 require_once('../penguin-framwork/loader/autoLoader.php'); 
 
 AutoLoader::findClass(); 
- 
+
+//Set to show errors during development. 
+Config::Enviroment('dev'); 
 
 
 //$test = new Active('user');
