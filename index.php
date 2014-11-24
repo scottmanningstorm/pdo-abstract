@@ -8,9 +8,6 @@ AutoLoader::findClass();
 //Set to show errors during development. 
 Config::Enviroment('dev'); 
 
-
-//$test = new Active('user');
-
 /////////////////
 ///TEST INDEX//// 
 /////////////////
