@@ -39,7 +39,7 @@ class UserCrud extends ControllerBaseClass
 		}
 		
 		
-		
+		$this->addParam('hasRelationship', $hasRelationship); 
 		//Add all of our params for view
  		$this->addStylesheet('styles'); 
 		$this->addParam('results', $get_all_rows);
